@@ -11,6 +11,7 @@ jobs:
   build_and_push:
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false   # Ensure jobs don't stop if one fails
       matrix:
         pg_version: [17.0, 16.4, 15.8, 14.13, 13.16, 12.20]
         variant: [base, alpine, bullseye]
@@ -49,6 +50,7 @@ jobs:
           docker push ${{ env.IMAGE_NAME }}:${{ matrix.pg_version }}-${{ matrix.variant }}
 
   changelog:
+    needs: build_and_push
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/master'
 
