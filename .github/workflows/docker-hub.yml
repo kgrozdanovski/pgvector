@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        pg_version: [latest, 17.0, 16.4, 15.8, 14.13, 13.16, 12.20]
+        pg_version: [17.0, 16.4, 15.8, 14.13, 13.16, 12.20]
         variant: [base, alpine, bullseye]
 
     steps:
@@ -25,7 +25,7 @@ jobs:
         run: |
           # Select Dockerfile based on the variant
           if [ "${{ matrix.variant }}" = "base" ]; then
-            DOCKERFILE=Dockerfile.base
+            DOCKERFILE=Dockerfile
           elif [ "${{ matrix.variant }}" = "alpine" ]; then
             DOCKERFILE=Dockerfile.alpine
           else
@@ -73,6 +73,6 @@ jobs:
 
       - name: Generate changelog
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
         run: npx semantic-release --no-ci
