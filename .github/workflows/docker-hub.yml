@@ -14,7 +14,7 @@ jobs:
       fail-fast: false   # Ensure jobs don't stop if one fails
       matrix:
         pg_version: ["17.0", "16.4", "15.8", "14.13", "13.16", "12.20"]
-        variant: [base, alpine, bullseye]
+        variant: [base, alpine, bullseye, bookworm]
 
     steps:
       - uses: actions/checkout@v4
