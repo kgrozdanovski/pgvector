@@ -18,8 +18,8 @@ the Docker Community Slack, Server Fault, Unix & Linux, or Stack Overflow
 
 #### Supported tags and respective Dockerfile links
 
-* `latest`, `17.0`, `17.0-alpine`, `17.0-bullseye`,
-* `16.4`, `16.4-alpine`, `16.4-bullseye`, `16.4-bookwrom`,
+* `latest`, `17.0`, `17.0-alpine`, `17.0-bullseye`, `17.0-bookworm`,
+* `16.4`, `16.4-alpine`, `16.4-bullseye`, `16.4-bookworm`,
 * `15.8`, `15.8-alpine`, `15.8-bullseye`, `15.8-bookworm`,
 * `14.13`, `14.13-alpine`, `14.13-bullseye`, `14.13-bookworm`,
 * `13.16`, `13.16-alpine`, `13.16-bullseye`, `13.16-bookworm`,
