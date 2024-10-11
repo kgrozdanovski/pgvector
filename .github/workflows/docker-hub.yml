@@ -56,14 +56,14 @@ jobs:
 
       # Tag and push "latest" for the 17.0 version
       - name: Tag the image as latest
-        if: matrix.pg_version == '17.0' # Only for 17.0
+        if: matrix.pg_version == '17.0' && matrix.variant == 'base' # Only for 17.0 default flavor
         run: |
-          docker tag ${{ env.IMAGE_NAME }}:17.0-${{ matrix.variant }} ${{ env.IMAGE_NAME }}:latest-${{ matrix.variant }}
+          docker tag ${{ env.IMAGE_NAME }}:17.0 ${{ env.IMAGE_NAME }}:latest
 
       - name: Push latest tag to Docker Hub
-        if: matrix.pg_version == '17.0' # Only for 17.0
+        if: matrix.pg_version == '17.0' && matrix.variant == 'base' # Only for 17.0 default flavor
         run: |
-          docker push ${{ env.IMAGE_NAME }}:latest-${{ matrix.variant }}
+          docker push ${{ env.IMAGE_NAME }}:latest
 
   changelog:
     needs: build_and_push
