@@ -47,4 +47,4 @@ At the moment, the only variant offered is the Alpine image, which significantly
 pipelines which build Docker images.
 
 We aim to provide images for all flavors found in the [official repo](https://hub.docker.com/_/postgres) which make sense
-to us - currently this includes all Alpine versions for Postgres 16+.
+to us - currently this includes all Base, Alpine and Bullseye major versions for Postgres 12+.

@@ -13,11 +13,11 @@ jobs:
     strategy:
       fail-fast: false   # Ensure jobs don't stop if one fails
       matrix:
-        pg_version: [17.0, 16.4, 15.8, 14.13, 13.16, 12.20]
+        pg_version: ["17.0", "16.4", "15.8", "14.13", "13.16", "12.20"]
         variant: [base, alpine, bullseye]
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
