@@ -25,19 +25,24 @@ jobs:
       - name: Build the Docker image
         run: |
           # Select Dockerfile based on the variant
-          if [ "${{ matrix.variant }}" = "base" ]; then
-            DOCKERFILE=Dockerfile
-          elif [ "${{ matrix.variant }}" = "alpine" ]; then
+          if [ "${{ matrix.variant }}" = "alpine" ]; then
             DOCKERFILE=Dockerfile.alpine
           else
-            DOCKERFILE=Dockerfile.bullseye
+            DOCKERFILE=Dockerfile
+          fi
+          
+          # Compose the image name
+          if [ "${{ matrix.variant }}" = "base" ]; then
+            IMAGE_NAME=${{ env.IMAGE_NAME }}:${{ matrix.pg_version }}
+          else
+            IMAGE_NAME=${{ env.IMAGE_NAME }}:${{ matrix.pg_version }}-${{ matrix.variant }}
           fi
 
           # Build the Docker image with the appropriate tag
           docker build \
             --build-arg PG_VERSION=${{ matrix.pg_version }} \
             -f $DOCKERFILE \
-            -t ${{ env.IMAGE_NAME }}:${{ matrix.pg_version }}-${{ matrix.variant }} .
+            -t $IMAGE_NAME .
 
       - name: Log in to Docker Hub
         uses: docker/login-action@v3
@@ -45,14 +50,13 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      - name: Push Docker Base image to Docker Hub
-        if: matrix.variant == 'base'
+      - name: Push Docker image to Docker Hub
         run: |
-          docker push ${{ env.IMAGE_NAME }}:${{ matrix.pg_version }}
-
-      - name: Push Docker alternative image to Docker Hub
-        run: |
-          docker push ${{ env.IMAGE_NAME }}:${{ matrix.pg_version }}-${{ matrix.variant }}
+          if [ "${{ matrix.variant }}" = "base" ]; then
+            docker push ${{ env.IMAGE_NAME }}:${{ matrix.pg_version }}
+          else
+            docker push ${{ env.IMAGE_NAME }}:${{ matrix.pg_version }}-${{ matrix.variant }}
+          fi
 
       # Tag and push "latest" for the 17.0 version
       - name: Tag the image as latest
