@@ -13,7 +13,7 @@ jobs:
     strategy:
       fail-fast: false   # Ensure jobs don't stop if one fails
       matrix:
-        pg_version: ["17.0", "16.4", "15.8", "14.13", "13.16", "12.20"]
+        pg_version: ["17.4", "16.8", "15.12", "14.17", "13.20", "12.20"]
         variant: [base, alpine, bullseye, bookworm]
 
     steps:
@@ -58,14 +58,14 @@ jobs:
             docker push ${{ env.IMAGE_NAME }}:${{ matrix.pg_version }}-${{ matrix.variant }}
           fi
 
-      # Tag and push "latest" for the 17.0 version
+      # Tag and push "latest" for the 17.4 version
       - name: Tag the image as latest
-        if: matrix.pg_version == '17.0' && matrix.variant == 'base' # Only for 17.0 default flavor
+        if: matrix.pg_version == '17.4' && matrix.variant == 'base' # Only for 17.4 default flavor
         run: |
-          docker tag ${{ env.IMAGE_NAME }}:17.0 ${{ env.IMAGE_NAME }}:latest
+          docker tag ${{ env.IMAGE_NAME }}:17.4 ${{ env.IMAGE_NAME }}:latest
 
       - name: Push latest tag to Docker Hub
-        if: matrix.pg_version == '17.0' && matrix.variant == 'base' # Only for 17.0 default flavor
+        if: matrix.pg_version == '17.4' && matrix.variant == 'base' # Only for 17.4 default flavor
         run: |
           docker push ${{ env.IMAGE_NAME }}:latest
 
