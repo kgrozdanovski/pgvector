@@ -7,11 +7,11 @@ FROM postgres:${PG_VERSION}-alpine AS pgvector-builder
 ARG PG_VERSION
 
 # Install required packages for building pgvector
-RUN apk add --no-cache git build-base gcc musl-dev clang15 clang15-dev llvm15;
+RUN apk add --no-cache git build-base gcc musl-dev clang19 clang19-dev llvm19;
 
 # Clone the pgvector repository and checkout the specific version
 WORKDIR /home
-RUN git clone --branch v0.7.4 https://github.com/pgvector/pgvector.git
+RUN git clone --branch v0.8.0 https://github.com/pgvector/pgvector.git
 
 # Build and install the pgvector extension
 WORKDIR /home/pgvector
