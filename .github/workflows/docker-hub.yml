@@ -13,7 +13,7 @@ jobs:
     strategy:
       fail-fast: false   # Ensure jobs don't stop if one fails
       matrix:
-        pg_version: ["17.4", "16.8", "15.12", "14.17", "13.20", "12.20"]
+        pg_version: ["18.0", "17.6", "16.10", "15.14", "14.19", "13.22", "12.20"]
         variant: [base, alpine, bullseye, bookworm]
 
     steps:
