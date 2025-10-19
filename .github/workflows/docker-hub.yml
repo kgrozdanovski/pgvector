@@ -60,12 +60,12 @@ jobs:
 
       # Tag and push "latest" for the 17.4 version
       - name: Tag the image as latest
-        if: matrix.pg_version == '17.4' && matrix.variant == 'base' # Only for 17.4 default flavor
+        if: matrix.pg_version == '18.0' && matrix.variant == 'base' # Only for 17.4 default flavor
         run: |
-          docker tag ${{ env.IMAGE_NAME }}:17.4 ${{ env.IMAGE_NAME }}:latest
+          docker tag ${{ env.IMAGE_NAME }}:18.0 ${{ env.IMAGE_NAME }}:latest
 
       - name: Push latest tag to Docker Hub
-        if: matrix.pg_version == '17.4' && matrix.variant == 'base' # Only for 17.4 default flavor
+        if: matrix.pg_version == '18.0' && matrix.variant == 'base' # Only for 17.4 default flavor
         run: |
           docker push ${{ env.IMAGE_NAME }}:latest
 
