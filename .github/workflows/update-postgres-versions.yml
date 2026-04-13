@@ -1,0 +1,55 @@
+name: Update Postgres Versions
+
+on:
+  schedule:
+    - cron: '0 6 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  update_postgres_versions:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check biweekly cadence
+        id: cadence
+        run: |
+          if [ "${{ github.event_name }}" != "schedule" ]; then
+            echo "should_run=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          week="$(date -u +%V)"
+          if [ $((10#$week % 2)) -eq 0 ]; then
+            echo "should_run=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "should_run=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Checkout code
+        if: steps.cadence.outputs.should_run == 'true'
+        uses: actions/checkout@v5
+
+      - name: Setup Node.js
+        if: steps.cadence.outputs.should_run == 'true'
+        uses: actions/setup-node@v6
+        with:
+          node-version: '22'
+
+      - name: Update Postgres versions
+        if: steps.cadence.outputs.should_run == 'true'
+        run: node scripts/update-postgres-versions.mjs
+
+      - name: Create pull request
+        if: steps.cadence.outputs.should_run == 'true'
+        uses: peter-evans/create-pull-request@v8
+        with:
+          branch: chore/update-postgres-versions
+          delete-branch: true
+          commit-message: 'chore: update postgres image versions'
+          title: 'chore: update postgres image versions'
+          body: |
+            Updates the generated Postgres Docker image matrix, README tags, and Dockerfile defaults from the official `postgres` Docker Hub tags.

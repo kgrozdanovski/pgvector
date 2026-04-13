@@ -6,6 +6,9 @@ on:
 env:
   REGISTRY: docker.io
   IMAGE_NAME: kgrozdanovski/pgvector
+  # BEGIN GENERATED POSTGRES LATEST VERSION
+  LATEST_PG_VERSION: "18.3"
+  # END GENERATED POSTGRES LATEST VERSION
 
 jobs:
   build_and_push:
@@ -13,16 +16,63 @@ jobs:
     strategy:
       fail-fast: false   # Ensure jobs don't stop if one fails
       matrix:
-        pg_version: ["18.3", "17.9", "16.13", "15.17", "14.22", "13.22", "12.20"]
-        variant: [base, alpine, bookworm, trixie]
         include:
-          - pg_version: "12.20"
+          # BEGIN GENERATED POSTGRES MATRIX
+          - pg_version: "18.3"
+            variant: base
+          - pg_version: "18.3"
+            variant: alpine
+          - pg_version: "18.3"
+            variant: bookworm
+          - pg_version: "18.3"
+            variant: trixie
+          - pg_version: "17.9"
+            variant: base
+          - pg_version: "17.9"
+            variant: alpine
+          - pg_version: "17.9"
+            variant: bookworm
+          - pg_version: "17.9"
+            variant: trixie
+          - pg_version: "16.13"
+            variant: base
+          - pg_version: "16.13"
+            variant: alpine
+          - pg_version: "16.13"
+            variant: bookworm
+          - pg_version: "16.13"
+            variant: trixie
+          - pg_version: "15.17"
+            variant: base
+          - pg_version: "15.17"
+            variant: alpine
+          - pg_version: "15.17"
+            variant: bookworm
+          - pg_version: "15.17"
+            variant: trixie
+          - pg_version: "14.22"
+            variant: base
+          - pg_version: "14.22"
+            variant: alpine
+          - pg_version: "14.22"
+            variant: bookworm
+          - pg_version: "14.22"
+            variant: trixie
+          - pg_version: "13.23"
+            variant: base
+          - pg_version: "13.23"
+            variant: alpine
+          - pg_version: "13.23"
+            variant: bookworm
+          - pg_version: "12.22"
+            variant: base
+          - pg_version: "12.22"
+            variant: alpine
+          - pg_version: "12.22"
+            variant: bookworm
+          - pg_version: "12.22"
             variant: bullseye
-        exclude:
-          - pg_version: "13.22"
-            variant: trixie
-          - pg_version: "12.20"
-            variant: trixie
+          # END GENERATED POSTGRES MATRIX
 
     steps:
       - uses: actions/checkout@v5
@@ -81,23 +131,23 @@ jobs:
           PG_MAJOR_VERSION="${PG_VERSION%%.*}"
 
           if [ "$VARIANT" = "base" ]; then
-            docker push ${{ env.IMAGE_NAME }}:$PG_VERSION
-            docker push ${{ env.IMAGE_NAME }}:$PG_MAJOR_VERSION
+            docker push "${{ env.IMAGE_NAME }}:$PG_VERSION"
+            docker push "${{ env.IMAGE_NAME }}:$PG_MAJOR_VERSION"
           else
-            docker push ${{ env.IMAGE_NAME }}:$PG_VERSION-$VARIANT
-            docker push ${{ env.IMAGE_NAME }}:$PG_MAJOR_VERSION-$VARIANT
+            docker push "${{ env.IMAGE_NAME }}:$PG_VERSION-$VARIANT"
+            docker push "${{ env.IMAGE_NAME }}:$PG_MAJOR_VERSION-$VARIANT"
           fi
 
-      # Tag and push "latest" for the 18.3 version
+      # Tag and push "latest" for the newest base Postgres version
       - name: Tag the image as latest
-        if: matrix.pg_version == '18.3' && matrix.variant == 'base' # Only for 18.3 default flavor
+        if: matrix.pg_version == env.LATEST_PG_VERSION && matrix.variant == 'base'
         run: |
-          docker tag ${{ env.IMAGE_NAME }}:18.3 ${{ env.IMAGE_NAME }}:latest
+          docker tag "${{ env.IMAGE_NAME }}:${{ env.LATEST_PG_VERSION }}" "${{ env.IMAGE_NAME }}:latest"
 
       - name: Push latest tag to Docker Hub
-        if: matrix.pg_version == '18.3' && matrix.variant == 'base' # Only for 18.3 default flavor
+        if: matrix.pg_version == env.LATEST_PG_VERSION && matrix.variant == 'base'
         run: |
-          docker push ${{ env.IMAGE_NAME }}:latest
+          docker push "${{ env.IMAGE_NAME }}:latest"
 
   changelog:
     needs: build_and_push
