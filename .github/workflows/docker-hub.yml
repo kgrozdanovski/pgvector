@@ -31,6 +31,7 @@ jobs:
         run: |
           VARIANT="${{ matrix.variant }}"
           PG_VERSION="${{ matrix.pg_version }}"
+          PG_MAJOR_VERSION="${PG_VERSION%%.*}"
           PG_VARIANT_SUFFIX=""
 
           # Select Dockerfile based on the variant
@@ -46,8 +47,10 @@ jobs:
           # Compose the image name
           if [ "$VARIANT" = "base" ]; then
             IMAGE_NAME=${{ env.IMAGE_NAME }}:$PG_VERSION
+            MAJOR_IMAGE_NAME=${{ env.IMAGE_NAME }}:$PG_MAJOR_VERSION
           else
             IMAGE_NAME=${{ env.IMAGE_NAME }}:$PG_VERSION-$VARIANT
+            MAJOR_IMAGE_NAME=${{ env.IMAGE_NAME }}:$PG_MAJOR_VERSION-$VARIANT
           fi
 
           BUILD_ARGS=(--build-arg "PG_VERSION=$PG_VERSION")
@@ -59,7 +62,8 @@ jobs:
           docker build \
             "${BUILD_ARGS[@]}" \
             -f "$DOCKERFILE" \
-            -t "$IMAGE_NAME" .
+            -t "$IMAGE_NAME" \
+            -t "$MAJOR_IMAGE_NAME" .
 
       - name: Log in to Docker Hub
         uses: docker/login-action@v4
@@ -69,10 +73,16 @@ jobs:
 
       - name: Push Docker image to Docker Hub
         run: |
-          if [ "${{ matrix.variant }}" = "base" ]; then
-            docker push ${{ env.IMAGE_NAME }}:${{ matrix.pg_version }}
+          VARIANT="${{ matrix.variant }}"
+          PG_VERSION="${{ matrix.pg_version }}"
+          PG_MAJOR_VERSION="${PG_VERSION%%.*}"
+
+          if [ "$VARIANT" = "base" ]; then
+            docker push ${{ env.IMAGE_NAME }}:$PG_VERSION
+            docker push ${{ env.IMAGE_NAME }}:$PG_MAJOR_VERSION
           else
-            docker push ${{ env.IMAGE_NAME }}:${{ matrix.pg_version }}-${{ matrix.variant }}
+            docker push ${{ env.IMAGE_NAME }}:$PG_VERSION-$VARIANT
+            docker push ${{ env.IMAGE_NAME }}:$PG_MAJOR_VERSION-$VARIANT
           fi
 
       # Tag and push "latest" for the 18.3 version

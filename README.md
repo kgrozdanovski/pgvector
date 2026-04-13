@@ -18,13 +18,13 @@ The Docker Community Slack, Server Fault, Unix & Linux, or Stack Overflow
 
 #### Supported tags and respective Dockerfile links
 
-* `latest`, `18.3`, `18.3-alpine`, `18.3-bullseye`, `18.3-bookworm`, `18.3-trixie`,
-* `17.9`, `17.9-alpine`, `17.9-bullseye`, `17.9-bookworm`, `17.9-trixie`,
-* `16.13`, `16.13-alpine`, `16.13-bullseye`, `16.13-bookworm`, `16.13-trixie`,
-* `15.17`, `15.17-alpine`, `15.17-bullseye`, `15.17-bookworm`, `15.17-trixie`,
-* `14.22`, `14.22-alpine`, `14.22-bullseye`, `14.22-bookworm`, `14.22-trixie`,
-* `13.22`, `13.22-alpine`, `13.22-bullseye`, `13.22-bookworm`,
-* `12.20`, `12.20-alpine`, `12.20-bullseye`, `12.20-bookworm`
+* `latest`, `18`, `18.3`, `18-alpine`, `18.3-alpine`, `18-bullseye`, `18.3-bullseye`, `18-bookworm`, `18.3-bookworm`, `18-trixie`, `18.3-trixie`,
+* `17`, `17.9`, `17-alpine`, `17.9-alpine`, `17-bullseye`, `17.9-bullseye`, `17-bookworm`, `17.9-bookworm`, `17-trixie`, `17.9-trixie`,
+* `16`, `16.13`, `16-alpine`, `16.13-alpine`, `16-bullseye`, `16.13-bullseye`, `16-bookworm`, `16.13-bookworm`, `16-trixie`, `16.13-trixie`,
+* `15`, `15.17`, `15-alpine`, `15.17-alpine`, `15-bullseye`, `15.17-bullseye`, `15-bookworm`, `15.17-bookworm`, `15-trixie`, `15.17-trixie`,
+* `14`, `14.22`, `14-alpine`, `14.22-alpine`, `14-bullseye`, `14.22-bullseye`, `14-bookworm`, `14.22-bookworm`, `14-trixie`, `14.22-trixie`,
+* `13`, `13.22`, `13-alpine`, `13.22-alpine`, `13-bullseye`, `13.22-bullseye`, `13-bookworm`, `13.22-bookworm`,
+* `12`, `12.20`, `12-alpine`, `12.20-alpine`, `12-bullseye`, `12.20-bullseye`, `12-bookworm`, `12.20-bookworm`
 
 #### Where to file issues:
 
