@@ -8,47 +8,55 @@ All image variants are based on their official equivalents.
 
 #### Maintained by:
 
-KSI Software & Partners
+Kristijan Grozdanovski
 
-Visit the GitHub [repository](https://github.com/ksi-software/pgvector) for this project
+Visit the GitHub [repository](https://github.com/kgrozdanovski/pgvector) for this project
 
 #### Where to get help:
 
-the Docker Community Slack, Server Fault, Unix & Linux, or Stack Overflow
+The Docker Community Slack, Server Fault, Unix & Linux, or Stack Overflow
 
 #### Supported tags and respective Dockerfile links
 
-* `latest`, `17.0`, `17.0-alpine`, `17.0-bullseye`, `17.0-bookworm`,
-* `16.4`, `16.4-alpine`, `16.4-bullseye`, `16.4-bookworm`,
-* `15.8`, `15.8-alpine`, `15.8-bullseye`, `15.8-bookworm`,
-* `14.13`, `14.13-alpine`, `14.13-bullseye`, `14.13-bookworm`,
-* `13.16`, `13.16-alpine`, `13.16-bullseye`, `13.16-bookworm`,
+* `latest`, `18.3`, `18.3-alpine`, `18.3-bullseye`, `18.3-bookworm`, `18.3-trixie`,
+* `17.9`, `17.9-alpine`, `17.9-bullseye`, `17.9-bookworm`, `17.9-trixie`,
+* `16.13`, `16.13-alpine`, `16.13-bullseye`, `16.13-bookworm`, `16.13-trixie`,
+* `15.17`, `15.17-alpine`, `15.17-bullseye`, `15.17-bookworm`, `15.17-trixie`,
+* `14.22`, `14.22-alpine`, `14.22-bullseye`, `14.22-bookworm`, `14.22-trixie`,
+* `13.22`, `13.22-alpine`, `13.22-bullseye`, `13.22-bookworm`,
 * `12.20`, `12.20-alpine`, `12.20-bullseye`, `12.20-bookworm`
 
 #### Where to file issues:
 
-https://github.com/ksi-software/pgvector/issues
+https://github.com/kgrozdanovski/pgvector/issues
 
 ## What is pgvector?
 
-pgvector is a PostgreSQL extension for vector similarity search. It can also be used for storing embeddings.
+pgvector is a PostgreSQL extension for vector similarity search. It enables efficient storage, indexing and similarity
+searching for high-dimensional vector embeddings directly within the Postgres database.
 
 Read more [here](https://github.com/pgvector/pgvector).
 
 ## How to use this image
 
-Our images are drop-in replacements for their official Docker counterparts. Simply use these images as base images
-in your Dockerfile or Docker Compose specification:
+These images are drop-in replacements for their official Docker counterparts. Simply use these images as base images
+in your Dockerfile or Docker Compose specification, for example:
 
 ```yaml
 database:
-  image: ksisoft/pgvector:16.3-alpine
+  image: kgrozdanovski/pgvector:18.3-alpine
+  restart: always
+  environment:
+    POSTGRES_USER=db_user
+    POSTGRES_PASSWORD=db_password
+    POSTGRES_DB=db_name
+  volumes:
+    - db-virtual-volume:/var/lib/postgresql/data:rw # persist data even if container shuts down
+  ports:
+    - "127.0.0.1:5432:5432"
 ```
 
 ## Image Variants
 
-At the moment, the only variant offered is the Alpine image, which significantly speeds up local builds and
-pipelines which build Docker images.
-
-We aim to provide images for all flavors found in the [official repo](https://hub.docker.com/_/postgres) which make sense
-to us - currently this includes all Base, Alpine and Bullseye major versions for Postgres 12+.
+My goal is to provide images for all flavors found in the [official repo](https://hub.docker.com/_/postgres) which make sense
+to me - currently this includes Base, Alpine, Bullseye and Bookworm variants for Postgres 12+, plus Trixie for Postgres 14+.

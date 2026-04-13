@@ -32,9 +32,9 @@ At minimum, you only need to do the following two steps:
 
 1. Build the Docker image
    ```shell
-   docker build -t cognirum/pgvector:16.3-alpine .
+   docker build -t kgrozdanovski/pgvector:18.3-alpine .
    ```
 2. Push the Docker image to Docker Hub
    ```shell
-   docker push cognirum/pgvector:16.3-alpine
+   docker push kgrozdanovski/pgvector:18.3-alpine
    ```
