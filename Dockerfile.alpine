@@ -1,22 +1,32 @@
 # Base image with ARG for PostgreSQL version
-ARG PG_VERSION
+ARG PG_VERSION=18.3
 # Build pgvector extension
 FROM postgres:${PG_VERSION}-alpine AS pgvector-builder
 
 # Set environment variables
 ARG PG_VERSION
+ARG PGVECTOR_VERSION
 
 # Install required packages for building pgvector
-RUN apk add --no-cache git build-base gcc musl-dev clang19 clang19-dev llvm19;
+RUN apk add --no-cache git build-base gcc musl-dev \
+    && CLANG_PACKAGE="$(sed -n 's/^CLANG = //p' /usr/local/lib/postgresql/pgxs/src/Makefile.global | tr -d '-')" \
+    && LLVM_PACKAGE="$(printf '%s\n' "$CLANG_PACKAGE" | sed 's/^clang/llvm/')" \
+    && apk add --no-cache "$CLANG_PACKAGE" "$CLANG_PACKAGE-dev" "$LLVM_PACKAGE"
 
-# Clone the pgvector repository and checkout the specific version
+# Clone the pgvector repository and checkout the version supported by this Postgres major
 WORKDIR /home
-RUN git clone --branch v0.8.0 https://github.com/pgvector/pgvector.git
+RUN if [ -z "$PGVECTOR_VERSION" ]; then \
+        case "${PG_VERSION%%.*}" in \
+            12) PGVECTOR_VERSION=0.7.4 ;; \
+            *) PGVECTOR_VERSION=0.8.2 ;; \
+        esac; \
+    fi \
+    && git clone --depth 1 --branch "v${PGVECTOR_VERSION}" https://github.com/pgvector/pgvector.git
 
 # Build and install the pgvector extension
 WORKDIR /home/pgvector
 
-RUN make && make install
+RUN make OPTFLAGS="" && make install
 
 # Final image with PostgreSQL and pgvector installed
 FROM postgres:${PG_VERSION}-alpine

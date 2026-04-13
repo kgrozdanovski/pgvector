@@ -14,7 +14,10 @@ jobs:
       fail-fast: false   # Ensure jobs don't stop if one fails
       matrix:
         pg_version: ["18.3", "17.9", "16.13", "15.17", "14.22", "13.22", "12.20"]
-        variant: [base, alpine, bullseye, bookworm, trixie]
+        variant: [base, alpine, bookworm, trixie]
+        include:
+          - pg_version: "12.20"
+            variant: bullseye
         exclude:
           - pg_version: "13.22"
             variant: trixie
