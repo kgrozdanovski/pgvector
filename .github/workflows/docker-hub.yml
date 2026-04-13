@@ -5,7 +5,7 @@ on:
 
 env:
   REGISTRY: docker.io
-  IMAGE_NAME: cognirum/pgvector
+  IMAGE_NAME: kgrozdanovski/pgvector
 
 jobs:
   build_and_push:
@@ -13,39 +13,56 @@ jobs:
     strategy:
       fail-fast: false   # Ensure jobs don't stop if one fails
       matrix:
-        pg_version: ["18.0", "17.6", "16.10", "15.14", "14.19", "13.22", "12.20"]
-        variant: [base, alpine, bullseye, bookworm]
+        pg_version: ["18.3", "17.9", "16.13", "15.17", "14.22", "13.22", "12.20"]
+        variant: [base, alpine, bullseye, bookworm, trixie]
+        exclude:
+          - pg_version: "13.22"
+            variant: trixie
+          - pg_version: "12.20"
+            variant: trixie
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+        uses: docker/setup-buildx-action@v4
 
       - name: Build the Docker image
         run: |
+          VARIANT="${{ matrix.variant }}"
+          PG_VERSION="${{ matrix.pg_version }}"
+          PG_VARIANT_SUFFIX=""
+
           # Select Dockerfile based on the variant
-          if [ "${{ matrix.variant }}" = "alpine" ]; then
+          if [ "$VARIANT" = "alpine" ]; then
             DOCKERFILE=Dockerfile.alpine
           else
             DOCKERFILE=Dockerfile
+            if [ "$VARIANT" != "base" ]; then
+              PG_VARIANT_SUFFIX="-$VARIANT"
+            fi
           fi
-          
+
           # Compose the image name
-          if [ "${{ matrix.variant }}" = "base" ]; then
-            IMAGE_NAME=${{ env.IMAGE_NAME }}:${{ matrix.pg_version }}
+          if [ "$VARIANT" = "base" ]; then
+            IMAGE_NAME=${{ env.IMAGE_NAME }}:$PG_VERSION
           else
-            IMAGE_NAME=${{ env.IMAGE_NAME }}:${{ matrix.pg_version }}-${{ matrix.variant }}
+            IMAGE_NAME=${{ env.IMAGE_NAME }}:$PG_VERSION-$VARIANT
+          fi
+
+          BUILD_ARGS=(--build-arg "PG_VERSION=$PG_VERSION")
+          if [ "$VARIANT" != "alpine" ]; then
+            BUILD_ARGS+=(--build-arg "PG_VARIANT_SUFFIX=$PG_VARIANT_SUFFIX")
           fi
 
           # Build the Docker image with the appropriate tag
           docker build \
-            --build-arg PG_VERSION=${{ matrix.pg_version }} \
-            -f $DOCKERFILE \
-            -t $IMAGE_NAME .
+            "${BUILD_ARGS[@]}" \
+            -f "$DOCKERFILE" \
+            -t "$IMAGE_NAME" .
 
       - name: Log in to Docker Hub
-        uses: docker/login-action@v3
+        uses: docker/login-action@v4
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
@@ -58,14 +75,14 @@ jobs:
             docker push ${{ env.IMAGE_NAME }}:${{ matrix.pg_version }}-${{ matrix.variant }}
           fi
 
-      # Tag and push "latest" for the 17.4 version
+      # Tag and push "latest" for the 18.3 version
       - name: Tag the image as latest
-        if: matrix.pg_version == '18.0' && matrix.variant == 'base' # Only for 17.4 default flavor
+        if: matrix.pg_version == '18.3' && matrix.variant == 'base' # Only for 18.3 default flavor
         run: |
-          docker tag ${{ env.IMAGE_NAME }}:18.0 ${{ env.IMAGE_NAME }}:latest
+          docker tag ${{ env.IMAGE_NAME }}:18.3 ${{ env.IMAGE_NAME }}:latest
 
       - name: Push latest tag to Docker Hub
-        if: matrix.pg_version == '18.0' && matrix.variant == 'base' # Only for 17.4 default flavor
+        if: matrix.pg_version == '18.3' && matrix.variant == 'base' # Only for 18.3 default flavor
         run: |
           docker push ${{ env.IMAGE_NAME }}:latest
 
@@ -76,12 +93,12 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           ref: master
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: 'latest'
 
