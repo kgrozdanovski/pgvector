@@ -1,3 +1,15 @@
+# [1.1.0](https://github.com/kgrozdanovski/pgvector/compare/v1.0.0...v1.1.0) (2026-06-08)
+
+
+### Bug Fixes
+
+* **ci:** workflow permissions issue in update-postgres-versions job ([4690e42](https://github.com/kgrozdanovski/pgvector/commit/4690e42990b90ff34a66fcc98a5ae760fb3ef164))
+
+
+### Features
+
+* **ci:** automated version bumping bot ([fae9f3c](https://github.com/kgrozdanovski/pgvector/commit/fae9f3c604d92fb53a7ccfbafc16c72c830a0690))
+
 # 1.0.0 (2026-04-13)
 
 
