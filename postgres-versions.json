@@ -1,0 +1,115 @@
+{
+  "latest": "18.3",
+  "matrix": {
+    "include": [
+      {
+        "pg_version": "18.3",
+        "variant": "base"
+      },
+      {
+        "pg_version": "18.3",
+        "variant": "alpine"
+      },
+      {
+        "pg_version": "18.3",
+        "variant": "bookworm"
+      },
+      {
+        "pg_version": "18.3",
+        "variant": "trixie"
+      },
+      {
+        "pg_version": "17.10",
+        "variant": "base"
+      },
+      {
+        "pg_version": "17.10",
+        "variant": "alpine"
+      },
+      {
+        "pg_version": "17.10",
+        "variant": "bookworm"
+      },
+      {
+        "pg_version": "17.10",
+        "variant": "trixie"
+      },
+      {
+        "pg_version": "16.14",
+        "variant": "base"
+      },
+      {
+        "pg_version": "16.14",
+        "variant": "alpine"
+      },
+      {
+        "pg_version": "16.14",
+        "variant": "bookworm"
+      },
+      {
+        "pg_version": "16.14",
+        "variant": "trixie"
+      },
+      {
+        "pg_version": "15.18",
+        "variant": "base"
+      },
+      {
+        "pg_version": "15.18",
+        "variant": "alpine"
+      },
+      {
+        "pg_version": "15.18",
+        "variant": "bookworm"
+      },
+      {
+        "pg_version": "15.18",
+        "variant": "trixie"
+      },
+      {
+        "pg_version": "14.23",
+        "variant": "base"
+      },
+      {
+        "pg_version": "14.23",
+        "variant": "alpine"
+      },
+      {
+        "pg_version": "14.23",
+        "variant": "bookworm"
+      },
+      {
+        "pg_version": "14.23",
+        "variant": "trixie"
+      },
+      {
+        "pg_version": "13.23",
+        "variant": "base"
+      },
+      {
+        "pg_version": "13.23",
+        "variant": "alpine"
+      },
+      {
+        "pg_version": "13.23",
+        "variant": "bookworm"
+      },
+      {
+        "pg_version": "12.22",
+        "variant": "base"
+      },
+      {
+        "pg_version": "12.22",
+        "variant": "alpine"
+      },
+      {
+        "pg_version": "12.22",
+        "variant": "bookworm"
+      },
+      {
+        "pg_version": "12.22",
+        "variant": "bullseye"
+      }
+    ]
+  }
+}

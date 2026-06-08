@@ -20,10 +20,10 @@ The Docker Community Slack, Server Fault, Unix & Linux, or Stack Overflow
 
 <!-- BEGIN GENERATED POSTGRES TAGS -->
 * `latest`, `18`, `18.3`, `18-alpine`, `18.3-alpine`, `18-bookworm`, `18.3-bookworm`, `18-trixie`, `18.3-trixie`
-* `17`, `17.9`, `17-alpine`, `17.9-alpine`, `17-bookworm`, `17.9-bookworm`, `17-trixie`, `17.9-trixie`
-* `16`, `16.13`, `16-alpine`, `16.13-alpine`, `16-bookworm`, `16.13-bookworm`, `16-trixie`, `16.13-trixie`
-* `15`, `15.17`, `15-alpine`, `15.17-alpine`, `15-bookworm`, `15.17-bookworm`, `15-trixie`, `15.17-trixie`
-* `14`, `14.22`, `14-alpine`, `14.22-alpine`, `14-bookworm`, `14.22-bookworm`, `14-trixie`, `14.22-trixie`
+* `17`, `17.10`, `17-alpine`, `17.10-alpine`, `17-bookworm`, `17.10-bookworm`, `17-trixie`, `17.10-trixie`
+* `16`, `16.14`, `16-alpine`, `16.14-alpine`, `16-bookworm`, `16.14-bookworm`, `16-trixie`, `16.14-trixie`
+* `15`, `15.18`, `15-alpine`, `15.18-alpine`, `15-bookworm`, `15.18-bookworm`, `15-trixie`, `15.18-trixie`
+* `14`, `14.23`, `14-alpine`, `14.23-alpine`, `14-bookworm`, `14.23-bookworm`, `14-trixie`, `14.23-trixie`
 * `13`, `13.23`, `13-alpine`, `13.23-alpine`, `13-bookworm`, `13.23-bookworm`
 * `12`, `12.22`, `12-alpine`, `12.22-alpine`, `12-bookworm`, `12.22-bookworm`, `12-bullseye`, `12.22-bullseye`
 <!-- END GENERATED POSTGRES TAGS -->

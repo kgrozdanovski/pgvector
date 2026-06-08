@@ -4,7 +4,7 @@ import { readFile, writeFile } from 'node:fs/promises';
 
 const dockerHubTagsUrl = 'https://hub.docker.com/v2/repositories/library/postgres/tags?page_size=100';
 const minSupportedMajor = 12;
-const workflowPath = '.github/workflows/docker-hub.yml';
+const versionsPath = 'postgres-versions.json';
 const readmePath = 'README.md';
 const dockerfilePaths = ['Dockerfile', 'Dockerfile.alpine'];
 
@@ -40,17 +40,29 @@ function variantExists(tags, version, variant) {
   return tags.has(tagForVariant(version, variant));
 }
 
-function renderMatrixInclude(releases) {
-  const lines = [];
+function matrixEntriesForReleases(releases) {
+  const entries = [];
 
   for (const release of releases) {
     for (const variant of release.variants) {
-      lines.push(`- pg_version: "${release.version}"`);
-      lines.push(`  variant: ${variant}`);
+      entries.push({ pg_version: release.version, variant });
     }
   }
 
-  return lines.join('\n');
+  return entries;
+}
+
+function renderVersionsData(releases) {
+  return `${JSON.stringify(
+    {
+      latest: releases[0].version,
+      matrix: {
+        include: matrixEntriesForReleases(releases),
+      },
+    },
+    null,
+    2,
+  )}\n`;
 }
 
 function renderReadmeTags(releases) {
@@ -75,29 +87,24 @@ function renderReadmeTags(releases) {
     .join('\n');
 }
 
-function getGeneratedBlock(content, name) {
-  const start = `# BEGIN GENERATED ${name}`;
-  const end = `# END GENERATED ${name}`;
-  const expression = new RegExp(`([ \\t]*)${escapeRegExp(start)}\\n([\\s\\S]*?)\\n\\1${escapeRegExp(end)}`);
-  const match = content.match(expression);
-
-  if (!match) {
-    throw new Error(`Could not find generated block: ${name}`);
-  }
-
-  return match[2];
-}
-
-function parseExistingMatrixReleases(content) {
-  const matrixBlock = getGeneratedBlock(content, 'POSTGRES MATRIX');
-  const entries = [...matrixBlock.matchAll(/^\s*-\s+pg_version:\s+"?([0-9]+)\.([0-9]+)"?\s*\n\s*variant:\s+([a-z0-9_-]+)\s*$/gm)];
+function parseExistingMatrixReleases(matrixEntries) {
   const releasesByVersion = new Map();
 
-  for (const entry of entries) {
-    const major = Number(entry[1]);
-    const patch = Number(entry[2]);
-    const version = `${major}.${patch}`;
-    const variant = entry[3];
+  for (const entry of matrixEntries) {
+    if (typeof entry.pg_version !== 'string' || typeof entry.variant !== 'string') {
+      throw new Error('Invalid postgres versions matrix entry');
+    }
+
+    const match = entry.pg_version.match(/^([0-9]+)\.([0-9]+)$/);
+
+    if (!match) {
+      throw new Error(`Invalid Postgres version: ${entry.pg_version}`);
+    }
+
+    const major = Number(match[1]);
+    const patch = Number(match[2]);
+    const version = entry.pg_version;
+    const variant = entry.variant;
 
     if (major < minSupportedMajor) {
       continue;
@@ -121,25 +128,6 @@ function parseExistingMatrixReleases(content) {
   }
 
   return [...latestByMajor.values()].sort(compareVersionsDesc);
-}
-
-function replaceGeneratedBlock(content, name, replacement) {
-  const start = `# BEGIN GENERATED ${name}`;
-  const end = `# END GENERATED ${name}`;
-  const expression = new RegExp(`([ \\t]*)${escapeRegExp(start)}\\n[\\s\\S]*?\\n\\1${escapeRegExp(end)}`);
-  const match = content.match(expression);
-
-  if (!match) {
-    throw new Error(`Could not find generated block: ${name}`);
-  }
-
-  const indent = match[1];
-  const replacementWithIndent = replacement
-    .split('\n')
-    .map((line) => (line.length === 0 ? line : `${indent}${line}`))
-    .join('\n');
-
-  return content.replace(expression, `${indent}${start}\n${replacementWithIndent}\n${indent}${end}`);
 }
 
 function replaceGeneratedHtmlBlock(content, name, replacement) {
@@ -257,8 +245,8 @@ async function updateFile(path, updater) {
 }
 
 async function main() {
-  const currentWorkflow = await readFile(workflowPath, 'utf8');
-  const existingReleases = parseExistingMatrixReleases(currentWorkflow);
+  const currentVersions = JSON.parse(await readFile(versionsPath, 'utf8'));
+  const existingReleases = parseExistingMatrixReleases(currentVersions.matrix?.include ?? []);
   const tags = await fetchPostgresTags();
   const selectedReleases = selectReleases(tags);
 
@@ -272,17 +260,9 @@ async function main() {
   const changed = [];
 
   if (
-    await updateFile(workflowPath, (content) => {
-      let updated = replaceGeneratedBlock(
-        content,
-        'POSTGRES LATEST VERSION',
-        `LATEST_PG_VERSION: "${latestVersion}"`,
-      );
-      updated = replaceGeneratedBlock(updated, 'POSTGRES MATRIX', renderMatrixInclude(releases));
-      return updated;
-    })
+    await updateFile(versionsPath, () => renderVersionsData(releases))
   ) {
-    changed.push(workflowPath);
+    changed.push(versionsPath);
   }
 
   if (
