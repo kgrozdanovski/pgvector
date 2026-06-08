@@ -1,5 +1,5 @@
 # Base image with ARG for PostgreSQL version
-ARG PG_VERSION=18.3
+ARG PG_VERSION=18.4
 ARG PG_VARIANT_SUFFIX=
 FROM postgres:${PG_VERSION}${PG_VARIANT_SUFFIX}
 
