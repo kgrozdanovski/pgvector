@@ -19,7 +19,7 @@ The Docker Community Slack, Server Fault, Unix & Linux, or Stack Overflow
 #### Supported tags and respective Dockerfile links
 
 <!-- BEGIN GENERATED POSTGRES TAGS -->
-* `latest`, `18`, `18.3`, `18-alpine`, `18.3-alpine`, `18-bookworm`, `18.3-bookworm`, `18-trixie`, `18.3-trixie`
+* `latest`, `18`, `18.4`, `18-alpine`, `18.4-alpine`, `18-bookworm`, `18.4-bookworm`, `18-trixie`, `18.4-trixie`
 * `17`, `17.10`, `17-alpine`, `17.10-alpine`, `17-bookworm`, `17.10-bookworm`, `17-trixie`, `17.10-trixie`
 * `16`, `16.14`, `16-alpine`, `16.14-alpine`, `16-bookworm`, `16.14-bookworm`, `16-trixie`, `16.14-trixie`
 * `15`, `15.18`, `15-alpine`, `15.18-alpine`, `15-bookworm`, `15.18-bookworm`, `15-trixie`, `15.18-trixie`
@@ -46,7 +46,7 @@ in your Dockerfile or Docker Compose specification, for example:
 
 ```yaml
 database:
-  image: kgrozdanovski/pgvector:18.3-alpine
+  image: kgrozdanovski/pgvector:18.4-alpine
   restart: always
   environment:
     POSTGRES_USER=db_user

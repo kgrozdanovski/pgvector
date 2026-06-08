@@ -1,5 +1,5 @@
 # Base image with ARG for PostgreSQL version
-ARG PG_VERSION=18.3
+ARG PG_VERSION=18.4
 # Build pgvector extension
 FROM postgres:${PG_VERSION}-alpine AS pgvector-builder
 

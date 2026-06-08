@@ -1,21 +1,21 @@
 {
-  "latest": "18.3",
+  "latest": "18.4",
   "matrix": {
     "include": [
       {
-        "pg_version": "18.3",
+        "pg_version": "18.4",
         "variant": "base"
       },
       {
-        "pg_version": "18.3",
+        "pg_version": "18.4",
         "variant": "alpine"
       },
       {
-        "pg_version": "18.3",
+        "pg_version": "18.4",
         "variant": "bookworm"
       },
       {
-        "pg_version": "18.3",
+        "pg_version": "18.4",
         "variant": "trixie"
       },
       {
