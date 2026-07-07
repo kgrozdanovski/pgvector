@@ -3,10 +3,15 @@
 import { readFile, writeFile } from 'node:fs/promises';
 
 const dockerHubTagsUrl = 'https://hub.docker.com/v2/repositories/library/postgres/tags?page_size=100';
+const pgvectorTagsUrl = 'https://api.github.com/repos/pgvector/pgvector/tags?per_page=100';
 const minSupportedMajor = 12;
 const versionsPath = 'postgres-versions.json';
 const readmePath = 'README.md';
 const dockerfilePaths = ['Dockerfile', 'Dockerfile.alpine'];
+
+// pgvector 0.8+ requires Postgres 13+. 0.7.4 is the last release that supports
+// Postgres 12, so cap that major here instead of tracking the latest upstream tag.
+const pgvectorOverrideByMajor = new Map([[12, '0.7.4']]);
 
 const checkOnly = process.argv.includes('--check');
 
@@ -32,6 +37,10 @@ function preferredVariantsForMajor(major) {
   return variants;
 }
 
+function pgvectorForMajor(major, latest) {
+  return pgvectorOverrideByMajor.get(major) ?? latest;
+}
+
 function tagForVariant(version, variant) {
   return variant === 'base' ? version : `${version}-${variant}`;
 }
@@ -45,17 +54,22 @@ function matrixEntriesForReleases(releases) {
 
   for (const release of releases) {
     for (const variant of release.variants) {
-      entries.push({ pg_version: release.version, variant });
+      entries.push({
+        pg_version: release.version,
+        variant,
+        pgvector_version: release.pgvector_version,
+      });
     }
   }
 
   return entries;
 }
 
-function renderVersionsData(releases) {
+function renderVersionsData(releases, pgvectorLatest) {
   return `${JSON.stringify(
     {
       latest: releases[0].version,
+      pgvector: pgvectorLatest,
       matrix: {
         include: matrixEntriesForReleases(releases),
       },
@@ -63,6 +77,12 @@ function renderVersionsData(releases) {
     null,
     2,
   )}\n`;
+}
+
+function latestVariantVersion(releases, variant) {
+  const release = releases.find((candidate) => candidate.variants.includes(variant));
+
+  return release ? release.version : releases[0].version;
 }
 
 function renderReadmeTags(releases) {
@@ -111,7 +131,13 @@ function parseExistingMatrixReleases(matrixEntries) {
     }
 
     if (!releasesByVersion.has(version)) {
-      releasesByVersion.set(version, { major, patch, version, variants: [] });
+      releasesByVersion.set(version, {
+        major,
+        patch,
+        version,
+        variants: [],
+        pgvector_version: entry.pgvector_version,
+      });
     }
 
     releasesByVersion.get(version).variants.push(variant);
@@ -146,18 +172,31 @@ function escapeRegExp(value) {
   return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
 
+async function fetchJson(url) {
+  const headers = { 'User-Agent': 'pgvector-image-updater' };
+
+  // GitHub's unauthenticated API is limited to 60 requests/hour per IP; use the
+  // Actions token when available so scheduled runs don't get rate limited.
+  if (url.startsWith('https://api.github.com/') && process.env.GITHUB_TOKEN) {
+    headers.Authorization = `Bearer ${process.env.GITHUB_TOKEN}`;
+    headers.Accept = 'application/vnd.github+json';
+  }
+
+  const response = await fetch(url, { headers });
+
+  if (!response.ok) {
+    throw new Error(`Request to ${url} returned ${response.status}`);
+  }
+
+  return response.json();
+}
+
 async function fetchPostgresTags() {
   const tags = new Set();
   let nextUrl = dockerHubTagsUrl;
 
   while (nextUrl) {
-    const response = await fetch(nextUrl);
-
-    if (!response.ok) {
-      throw new Error(`Docker Hub returned ${response.status} for ${nextUrl}`);
-    }
-
-    const page = await response.json();
+    const page = await fetchJson(nextUrl);
 
     for (const result of page.results ?? []) {
       if (typeof result.name === 'string') {
@@ -171,7 +210,33 @@ async function fetchPostgresTags() {
   return tags;
 }
 
-function selectReleases(tags) {
+async function fetchPgvectorLatest() {
+  const tags = await fetchJson(pgvectorTagsUrl);
+  const versions = [];
+
+  for (const tag of tags) {
+    const match = typeof tag.name === 'string' && tag.name.match(/^v([0-9]+)\.([0-9]+)\.([0-9]+)$/);
+
+    if (match) {
+      versions.push({
+        raw: tag.name.slice(1),
+        parts: [Number(match[1]), Number(match[2]), Number(match[3])],
+      });
+    }
+  }
+
+  if (versions.length === 0) {
+    throw new Error('No stable pgvector releases found');
+  }
+
+  versions.sort(
+    (a, b) => b.parts[0] - a.parts[0] || b.parts[1] - a.parts[1] || b.parts[2] - a.parts[2],
+  );
+
+  return versions[0].raw;
+}
+
+function selectReleases(tags, pgvectorLatest) {
   const candidatesByMajor = new Map();
   const exactVersionPattern = /^([0-9]+)\.([0-9]+)$/;
 
@@ -201,17 +266,28 @@ function selectReleases(tags) {
   for (const [major, candidates] of candidatesByMajor) {
     candidates.sort(compareVersionsDesc);
 
-    const release = candidates.find((candidate) =>
-      preferredVariantsForMajor(major).every((variant) => variantExists(tags, candidate.version, variant)),
+    // Pick the newest patch that publishes the base image, then keep whichever
+    // preferred variants actually exist for it. A variant that is temporarily
+    // missing upstream is simply dropped for this patch instead of pinning the
+    // whole major to an older patch; it returns on the next run once published.
+    const chosen = candidates.find((candidate) => variantExists(tags, candidate.version, 'base'));
+
+    if (!chosen) {
+      continue;
+    }
+
+    const variants = preferredVariantsForMajor(major).filter((variant) =>
+      variantExists(tags, chosen.version, variant),
     );
 
-    if (!release) {
+    if (variants.length === 0) {
       continue;
     }
 
     releases.push({
-      ...release,
-      variants: preferredVariantsForMajor(major),
+      ...chosen,
+      variants,
+      pgvector_version: pgvectorForMajor(major, pgvectorLatest),
     });
   }
 
@@ -223,7 +299,7 @@ function mergeWithFrozenReleases(selectedReleases, existingReleases) {
   const frozenReleases = existingReleases.filter((release) => !selectedMajors.has(release.major));
 
   for (const release of frozenReleases) {
-    console.log(`Freezing Postgres ${release.version}; no complete upstream tag set found for major ${release.major}.`);
+    console.log(`Freezing Postgres ${release.version}; no upstream base tag found for major ${release.major}.`);
   }
 
   return [...selectedReleases, ...frozenReleases].sort(compareVersionsDesc);
@@ -247,8 +323,8 @@ async function updateFile(path, updater) {
 async function main() {
   const currentVersions = JSON.parse(await readFile(versionsPath, 'utf8'));
   const existingReleases = parseExistingMatrixReleases(currentVersions.matrix?.include ?? []);
-  const tags = await fetchPostgresTags();
-  const selectedReleases = selectReleases(tags);
+  const [tags, pgvectorLatest] = await Promise.all([fetchPostgresTags(), fetchPgvectorLatest()]);
+  const selectedReleases = selectReleases(tags, pgvectorLatest);
 
   if (selectedReleases.length === 0) {
     throw new Error('No supported Postgres releases found');
@@ -257,10 +333,11 @@ async function main() {
   const releases = mergeWithFrozenReleases(selectedReleases, existingReleases);
 
   const latestVersion = releases[0].version;
+  const latestAlpineVersion = latestVariantVersion(releases, 'alpine');
   const changed = [];
 
   if (
-    await updateFile(versionsPath, () => renderVersionsData(releases))
+    await updateFile(versionsPath, () => renderVersionsData(releases, pgvectorLatest))
   ) {
     changed.push(versionsPath);
   }
@@ -270,7 +347,7 @@ async function main() {
       let updated = replaceGeneratedHtmlBlock(content, 'POSTGRES TAGS', renderReadmeTags(releases));
       updated = updated.replace(
         /image: kgrozdanovski\/pgvector:[0-9]+\.[0-9]+-alpine/g,
-        `image: kgrozdanovski/pgvector:${latestVersion}-alpine`,
+        `image: kgrozdanovski/pgvector:${latestAlpineVersion}-alpine`,
       );
       return updated;
     })
@@ -288,12 +365,25 @@ async function main() {
     }
   }
 
+  // Keep the alpine fallback pgvector version (used for local builds that don't
+  // pass PGVECTOR_VERSION) in sync with the latest tracked release.
+  if (
+    await updateFile('Dockerfile.alpine', (content) =>
+      content.replace(
+        /(\*\) PGVECTOR_VERSION=)[0-9]+\.[0-9]+\.[0-9]+/,
+        `$1${pgvectorLatest}`,
+      ),
+    )
+  ) {
+    changed.push('Dockerfile.alpine (pgvector default)');
+  }
+
   if (changed.length === 0) {
-    console.log(`Postgres versions are already up to date at ${latestVersion}.`);
+    console.log(`Postgres ${latestVersion} / pgvector ${pgvectorLatest} are already up to date.`);
     return;
   }
 
-  console.log(`Updated Postgres versions to ${latestVersion}:`);
+  console.log(`Updated to Postgres ${latestVersion} / pgvector ${pgvectorLatest}:`);
   for (const path of changed) {
     console.log(`- ${path}`);
   }
