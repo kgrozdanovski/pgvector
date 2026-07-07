@@ -18,7 +18,7 @@ WORKDIR /home
 RUN if [ -z "$PGVECTOR_VERSION" ]; then \
         case "${PG_VERSION%%.*}" in \
             12) PGVECTOR_VERSION=0.7.4 ;; \
-            *) PGVECTOR_VERSION=0.8.2 ;; \
+            *) PGVECTOR_VERSION=0.8.4 ;; \
         esac; \
     fi \
     && git clone --depth 1 --branch "v${PGVECTOR_VERSION}" https://github.com/pgvector/pgvector.git
