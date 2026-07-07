@@ -2,6 +2,11 @@ name: Create Release, Build and Push Docker Images to Docker Hub
 
 on:
   workflow_dispatch:
+  # Weekly force-rebuild of the currently released versions so images pick up
+  # base-image and apt security updates. New Postgres/pgvector versions are
+  # introduced separately via the "Update Postgres Versions" pull request.
+  schedule:
+    - cron: '0 7 * * 1'
 
 env:
   REGISTRY: docker.io
@@ -63,12 +68,15 @@ jobs:
           fi
 
           BUILD_ARGS=(--build-arg "PG_VERSION=$PG_VERSION")
-          if [ "$VARIANT" != "alpine" ]; then
+          if [ "$VARIANT" = "alpine" ]; then
+            BUILD_ARGS+=(--build-arg "PGVECTOR_VERSION=${{ matrix.pgvector_version }}")
+          else
             BUILD_ARGS+=(--build-arg "PG_VARIANT_SUFFIX=$PG_VARIANT_SUFFIX")
           fi
 
-          # Build the Docker image with the appropriate tag
-          docker build \
+          # Build the Docker image with the appropriate tag. --pull forces a fresh
+          # pull of the postgres base image so security updates are picked up.
+          docker build --pull \
             "${BUILD_ARGS[@]}" \
             -f "$DOCKERFILE" \
             -t "$IMAGE_NAME" \
