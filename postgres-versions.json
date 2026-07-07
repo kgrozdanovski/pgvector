@@ -1,114 +1,142 @@
 {
   "latest": "18.4",
+  "pgvector": "0.8.4",
   "matrix": {
     "include": [
       {
         "pg_version": "18.4",
-        "variant": "base"
+        "variant": "base",
+        "pgvector_version": "0.8.4"
       },
       {
         "pg_version": "18.4",
-        "variant": "alpine"
+        "variant": "alpine",
+        "pgvector_version": "0.8.4"
       },
       {
         "pg_version": "18.4",
-        "variant": "bookworm"
+        "variant": "bookworm",
+        "pgvector_version": "0.8.4"
       },
       {
         "pg_version": "18.4",
-        "variant": "trixie"
+        "variant": "trixie",
+        "pgvector_version": "0.8.4"
       },
       {
         "pg_version": "17.10",
-        "variant": "base"
+        "variant": "base",
+        "pgvector_version": "0.8.4"
       },
       {
         "pg_version": "17.10",
-        "variant": "alpine"
+        "variant": "alpine",
+        "pgvector_version": "0.8.4"
       },
       {
         "pg_version": "17.10",
-        "variant": "bookworm"
+        "variant": "bookworm",
+        "pgvector_version": "0.8.4"
       },
       {
         "pg_version": "17.10",
-        "variant": "trixie"
+        "variant": "trixie",
+        "pgvector_version": "0.8.4"
       },
       {
         "pg_version": "16.14",
-        "variant": "base"
+        "variant": "base",
+        "pgvector_version": "0.8.4"
       },
       {
         "pg_version": "16.14",
-        "variant": "alpine"
+        "variant": "alpine",
+        "pgvector_version": "0.8.4"
       },
       {
         "pg_version": "16.14",
-        "variant": "bookworm"
+        "variant": "bookworm",
+        "pgvector_version": "0.8.4"
       },
       {
         "pg_version": "16.14",
-        "variant": "trixie"
+        "variant": "trixie",
+        "pgvector_version": "0.8.4"
       },
       {
         "pg_version": "15.18",
-        "variant": "base"
+        "variant": "base",
+        "pgvector_version": "0.8.4"
       },
       {
         "pg_version": "15.18",
-        "variant": "alpine"
+        "variant": "alpine",
+        "pgvector_version": "0.8.4"
       },
       {
         "pg_version": "15.18",
-        "variant": "bookworm"
+        "variant": "bookworm",
+        "pgvector_version": "0.8.4"
       },
       {
         "pg_version": "15.18",
-        "variant": "trixie"
+        "variant": "trixie",
+        "pgvector_version": "0.8.4"
       },
       {
         "pg_version": "14.23",
-        "variant": "base"
+        "variant": "base",
+        "pgvector_version": "0.8.4"
       },
       {
         "pg_version": "14.23",
-        "variant": "alpine"
+        "variant": "alpine",
+        "pgvector_version": "0.8.4"
       },
       {
         "pg_version": "14.23",
-        "variant": "bookworm"
+        "variant": "bookworm",
+        "pgvector_version": "0.8.4"
       },
       {
         "pg_version": "14.23",
-        "variant": "trixie"
+        "variant": "trixie",
+        "pgvector_version": "0.8.4"
       },
       {
         "pg_version": "13.23",
-        "variant": "base"
+        "variant": "base",
+        "pgvector_version": "0.8.4"
       },
       {
         "pg_version": "13.23",
-        "variant": "alpine"
+        "variant": "alpine",
+        "pgvector_version": "0.8.4"
       },
       {
         "pg_version": "13.23",
-        "variant": "bookworm"
+        "variant": "bookworm",
+        "pgvector_version": "0.8.4"
       },
       {
         "pg_version": "12.22",
-        "variant": "base"
+        "variant": "base",
+        "pgvector_version": "0.7.4"
       },
       {
         "pg_version": "12.22",
-        "variant": "alpine"
+        "variant": "alpine",
+        "pgvector_version": "0.7.4"
       },
       {
         "pg_version": "12.22",
-        "variant": "bookworm"
+        "variant": "bookworm",
+        "pgvector_version": "0.7.4"
       },
       {
         "pg_version": "12.22",
-        "variant": "bullseye"
+        "variant": "bullseye",
+        "pgvector_version": "0.7.4"
       }
     ]
   }
