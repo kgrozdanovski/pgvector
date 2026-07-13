@@ -1,3 +1,10 @@
+# [1.2.0](https://github.com/kgrozdanovski/pgvector/compare/v1.1.0...v1.2.0) (2026-07-13)
+
+
+### Features
+
+* **scripts:** track pgvector version and select variants independently ([e82d4a1](https://github.com/kgrozdanovski/pgvector/commit/e82d4a104d43e954438c8b16ce5c356cb97b3167))
+
 # [1.1.0](https://github.com/kgrozdanovski/pgvector/compare/v1.0.0...v1.1.0) (2026-06-08)
 
 
