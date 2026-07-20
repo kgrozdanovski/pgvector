@@ -1,122 +1,122 @@
 {
   "latest": "18.4",
-  "pgvector": "0.8.4",
+  "pgvector": "0.8.5",
   "matrix": {
     "include": [
       {
         "pg_version": "18.4",
         "variant": "base",
-        "pgvector_version": "0.8.4"
+        "pgvector_version": "0.8.5"
       },
       {
         "pg_version": "18.4",
         "variant": "alpine",
-        "pgvector_version": "0.8.4"
+        "pgvector_version": "0.8.5"
       },
       {
         "pg_version": "18.4",
         "variant": "bookworm",
-        "pgvector_version": "0.8.4"
+        "pgvector_version": "0.8.5"
       },
       {
         "pg_version": "18.4",
         "variant": "trixie",
-        "pgvector_version": "0.8.4"
+        "pgvector_version": "0.8.5"
       },
       {
         "pg_version": "17.10",
         "variant": "base",
-        "pgvector_version": "0.8.4"
+        "pgvector_version": "0.8.5"
       },
       {
         "pg_version": "17.10",
         "variant": "alpine",
-        "pgvector_version": "0.8.4"
+        "pgvector_version": "0.8.5"
       },
       {
         "pg_version": "17.10",
         "variant": "bookworm",
-        "pgvector_version": "0.8.4"
+        "pgvector_version": "0.8.5"
       },
       {
         "pg_version": "17.10",
         "variant": "trixie",
-        "pgvector_version": "0.8.4"
+        "pgvector_version": "0.8.5"
       },
       {
         "pg_version": "16.14",
         "variant": "base",
-        "pgvector_version": "0.8.4"
+        "pgvector_version": "0.8.5"
       },
       {
         "pg_version": "16.14",
         "variant": "alpine",
-        "pgvector_version": "0.8.4"
+        "pgvector_version": "0.8.5"
       },
       {
         "pg_version": "16.14",
         "variant": "bookworm",
-        "pgvector_version": "0.8.4"
+        "pgvector_version": "0.8.5"
       },
       {
         "pg_version": "16.14",
         "variant": "trixie",
-        "pgvector_version": "0.8.4"
+        "pgvector_version": "0.8.5"
       },
       {
         "pg_version": "15.18",
         "variant": "base",
-        "pgvector_version": "0.8.4"
+        "pgvector_version": "0.8.5"
       },
       {
         "pg_version": "15.18",
         "variant": "alpine",
-        "pgvector_version": "0.8.4"
+        "pgvector_version": "0.8.5"
       },
       {
         "pg_version": "15.18",
         "variant": "bookworm",
-        "pgvector_version": "0.8.4"
+        "pgvector_version": "0.8.5"
       },
       {
         "pg_version": "15.18",
         "variant": "trixie",
-        "pgvector_version": "0.8.4"
+        "pgvector_version": "0.8.5"
       },
       {
         "pg_version": "14.23",
         "variant": "base",
-        "pgvector_version": "0.8.4"
+        "pgvector_version": "0.8.5"
       },
       {
         "pg_version": "14.23",
         "variant": "alpine",
-        "pgvector_version": "0.8.4"
+        "pgvector_version": "0.8.5"
       },
       {
         "pg_version": "14.23",
         "variant": "bookworm",
-        "pgvector_version": "0.8.4"
+        "pgvector_version": "0.8.5"
       },
       {
         "pg_version": "14.23",
         "variant": "trixie",
-        "pgvector_version": "0.8.4"
+        "pgvector_version": "0.8.5"
       },
       {
         "pg_version": "13.23",
         "variant": "base",
-        "pgvector_version": "0.8.4"
+        "pgvector_version": "0.8.5"
       },
       {
         "pg_version": "13.23",
         "variant": "alpine",
-        "pgvector_version": "0.8.4"
+        "pgvector_version": "0.8.5"
       },
       {
         "pg_version": "13.23",
         "variant": "bookworm",
-        "pgvector_version": "0.8.4"
+        "pgvector_version": "0.8.5"
       },
       {
         "pg_version": "12.22",
