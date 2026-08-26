@@ -2,8 +2,19 @@
 
 import { readFile, writeFile } from 'node:fs/promises';
 
-const dockerHubTagsUrl = 'https://hub.docker.com/v2/repositories/library/postgres/tags?page_size=100';
+// Docker Hub's /v2/repositories tag API refuses anonymous requests past the
+// first ~1000 results with a 403, and the postgres repository publishes more
+// tags than that. The registry API returns the whole tag list instead.
+const registryTokenUrl =
+  'https://auth.docker.io/token?service=registry.docker.io&scope=repository:library/postgres:pull';
+const registryTagsUrl = 'https://registry-1.docker.io/v2/library/postgres/tags/list';
 const pgvectorTagsUrl = 'https://api.github.com/repos/pgvector/pgvector/tags?per_page=100';
+const userAgent = 'pgvector-image-updater';
+
+// The postgres repository has published far more tags than this for years, so a
+// listing smaller than this means the response was truncated. Fail instead of
+// silently dropping variants from the generated matrix.
+const minExpectedTagCount = 1000;
 const minSupportedMajor = 12;
 const versionsPath = 'postgres-versions.json';
 const readmePath = 'README.md';
@@ -173,7 +184,7 @@ function escapeRegExp(value) {
 }
 
 async function fetchJson(url) {
-  const headers = { 'User-Agent': 'pgvector-image-updater' };
+  const headers = { 'User-Agent': userAgent };
 
   // GitHub's unauthenticated API is limited to 60 requests/hour per IP; use the
   // Actions token when available so scheduled runs don't get rate limited.
@@ -191,20 +202,49 @@ async function fetchJson(url) {
   return response.json();
 }
 
+function nextPageUrl(linkHeader, currentUrl) {
+  const match = linkHeader?.match(/<([^>]+)>\s*;[^,]*\brel="?next"?/i);
+
+  return match ? new URL(match[1], currentUrl).toString() : null;
+}
+
+async function fetchRegistryToken() {
+  const { token } = await fetchJson(registryTokenUrl);
+
+  if (!token) {
+    throw new Error('Docker registry did not return an anonymous pull token');
+  }
+
+  return token;
+}
+
 async function fetchPostgresTags() {
+  const headers = { 'User-Agent': userAgent, Authorization: `Bearer ${await fetchRegistryToken()}` };
   const tags = new Set();
-  let nextUrl = dockerHubTagsUrl;
+  let nextUrl = registryTagsUrl;
 
+  // The registry currently answers with the full list in one response, but the
+  // API may paginate via Link headers, so follow them when they show up.
   while (nextUrl) {
-    const page = await fetchJson(nextUrl);
+    const response = await fetch(nextUrl, { headers });
 
-    for (const result of page.results ?? []) {
-      if (typeof result.name === 'string') {
-        tags.add(result.name);
+    if (!response.ok) {
+      throw new Error(`Request to ${nextUrl} returned ${response.status}`);
+    }
+
+    const page = await response.json();
+
+    for (const tag of page.tags ?? []) {
+      if (typeof tag === 'string') {
+        tags.add(tag);
       }
     }
 
-    nextUrl = page.next;
+    nextUrl = nextPageUrl(response.headers.get('link'), nextUrl);
+  }
+
+  if (tags.size < minExpectedTagCount) {
+    throw new Error(`Expected at least ${minExpectedTagCount} postgres tags, received ${tags.size}`);
   }
 
   return tags;
