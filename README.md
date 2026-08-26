@@ -19,11 +19,11 @@ The Docker Community Slack, Server Fault, Unix & Linux, or Stack Overflow
 #### Supported tags and respective Dockerfile links
 
 <!-- BEGIN GENERATED POSTGRES TAGS -->
-* `latest`, `18`, `18.4`, `18-alpine`, `18.4-alpine`, `18-bookworm`, `18.4-bookworm`, `18-trixie`, `18.4-trixie`
-* `17`, `17.10`, `17-alpine`, `17.10-alpine`, `17-bookworm`, `17.10-bookworm`, `17-trixie`, `17.10-trixie`
-* `16`, `16.14`, `16-alpine`, `16.14-alpine`, `16-bookworm`, `16.14-bookworm`, `16-trixie`, `16.14-trixie`
-* `15`, `15.18`, `15-alpine`, `15.18-alpine`, `15-bookworm`, `15.18-bookworm`, `15-trixie`, `15.18-trixie`
-* `14`, `14.23`, `14-alpine`, `14.23-alpine`, `14-bookworm`, `14.23-bookworm`, `14-trixie`, `14.23-trixie`
+* `latest`, `18`, `18.6`, `18-alpine`, `18.6-alpine`, `18-bookworm`, `18.6-bookworm`, `18-trixie`, `18.6-trixie`
+* `17`, `17.11`, `17-alpine`, `17.11-alpine`, `17-bookworm`, `17.11-bookworm`, `17-trixie`, `17.11-trixie`
+* `16`, `16.15`, `16-alpine`, `16.15-alpine`, `16-bookworm`, `16.15-bookworm`, `16-trixie`, `16.15-trixie`
+* `15`, `15.19`, `15-alpine`, `15.19-alpine`, `15-bookworm`, `15.19-bookworm`, `15-trixie`, `15.19-trixie`
+* `14`, `14.24`, `14-alpine`, `14.24-alpine`, `14-bookworm`, `14.24-bookworm`, `14-trixie`, `14.24-trixie`
 * `13`, `13.23`, `13-alpine`, `13.23-alpine`, `13-bookworm`, `13.23-bookworm`
 * `12`, `12.22`, `12-alpine`, `12.22-alpine`, `12-bookworm`, `12.22-bookworm`, `12-bullseye`, `12.22-bullseye`
 <!-- END GENERATED POSTGRES TAGS -->
@@ -46,7 +46,7 @@ in your Dockerfile or Docker Compose specification, for example:
 
 ```yaml
 database:
-  image: kgrozdanovski/pgvector:18.4-alpine
+  image: kgrozdanovski/pgvector:18.6-alpine
   restart: always
   environment:
     POSTGRES_USER=db_user
