@@ -1,3 +1,10 @@
+## [1.2.1](https://github.com/kgrozdanovski/pgvector/compare/v1.2.0...v1.2.1) (2026-08-31)
+
+
+### Bug Fixes
+
+* **scripts:** read postgres tags from the registry API ([#5](https://github.com/kgrozdanovski/pgvector/issues/5)) ([b4fa309](https://github.com/kgrozdanovski/pgvector/commit/b4fa3099d2dd04ade651dbc1e180a65e0dae1ccb))
+
 # [1.2.0](https://github.com/kgrozdanovski/pgvector/compare/v1.1.0...v1.2.0) (2026-07-13)
 
 
